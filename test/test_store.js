@@ -1,12 +1,7 @@
 var chai = require('chai');
 var expect = chai.expect;
 
-import Store from '../src/js/Store.js';
-
-const inventory_statuses = {
-  IN_STOCK: 1,
-  SOLD: 2
-};
+import { Store, inventory_statuses } from '../src/js/Store.js';
 
 let test_inventory = [
   {
@@ -71,7 +66,13 @@ describe('Store', () => {
 
   });
 
-  // it('should change status when we sell an item', () = {
-  // });
+  it('should decrement inventory when we sell an item', () => {
+    let store = new Store( test_inventory );
 
+    expect( store.inventorySell(1) ).to.be.ok;
+    expect( store.inventoryGetById(1).status ).to.equal( inventory_statuses.SOLD );
+
+    expect( () => { store.inventorySell(1) } ).to.throw('item is already marked as sold');
+    expect( () => { store.inventorySell(666) } ).to.throw('item with id not found');
+  });
 });

@@ -1,4 +1,9 @@
-export default class Store {
+export const inventory_statuses = {
+  IN_STOCK: 1,
+  SOLD: 2
+};
+
+export class Store {
 
   constructor(inventory) {
 
@@ -31,11 +36,23 @@ export default class Store {
       return el.id == id;
     });
 
-    if(item) {
+    if ( item ) {
       return item;
     }
 
     throw Error('item with id not found');
+  }
+
+  inventorySell( id ) {
+    let item = this.inventoryGetById(id);
+
+    if ( item.status === inventory_statuses.SOLD ) {
+      throw Error ('item is already marked as sold');
+    }
+
+    item.status = inventory_statuses.SOLD;
+
+    return item;
   }
 
 }
