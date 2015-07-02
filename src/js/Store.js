@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 export const inventory_statuses = {
   IN_STOCK: 1,
   SOLD: 2
@@ -15,8 +17,31 @@ export class Store {
 
   }
 
-  inventorySize() {
-    return this.inventory.length;
+  // inventorySize(null, inventory_status.SOLD)
+
+  inventorySize(sku, status) {
+    sku = sku || false;
+    status = status || false;
+
+    if(!sku && !status) {
+      return this.inventory.length;
+    }
+
+    let items = this.inventory;
+
+    if(sku) {
+      items = items.filter( (item) => {
+        return item.sku === sku;
+      });
+    }
+
+    if(status) {
+      items = items.filter( (item) => {
+        return item.status === status;
+      });
+    }
+
+    return items.length;
   }
 
   inventoryAdd(item) {
@@ -24,10 +49,28 @@ export class Store {
       throw Error('item required');
     }
 
-    this.inventory.push( item );
+    this.inventory.push( Object.assign({}, item) );
+  }
+
+  // { 'name': string }
+  // { 'sku': int }
+  // { 'id': int }
+  // { 'status': int??? }
+  // { sku: 2, status: inventory_status.SOLD }
+  //
+  findBy(options) {
+    return this.inventory.reduce( ( accumlator, item ) => {
+      for (var key in options) {
+        if (item.hasOwnProperty(key) && item[key] === options[key]) {
+          accumlator.push(item);
+        }
+      }
+      return accumlator;
+    }, []);
   }
 
   inventoryGetById( id ) {
+
     if(!id) {
       throw Error('id required');
     }
